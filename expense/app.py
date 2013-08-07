@@ -9,6 +9,3 @@ def get_year(year):
 @app.route('/<year>/<month>/')
 def get_month(year,month):
 	return jsonify(year=year, month=month)
-
-if __name__ == '__main__':
-	app.run(debug=True, port=9000)
