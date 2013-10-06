@@ -1,11 +1,19 @@
-from flask import Flask, jsonify
+from flask import Flask
+from flask.ext.mongoengine import MongoEngine
 
 app = Flask(__name__)
+app.config["MONGODB_SETTINGS"] = {"DB": "expense_app_test2"}
+app.config["SECRET_KEY"] = "KeepThisS3cr3t"
 
-@app.route('/<year>/')
-def get_year(year):
-	return jsonify(year=year)
+db = MongoEngine(app)
 
-@app.route('/<year>/<month>/')
-def get_month(year,month):
-	return jsonify(year=year, month=month)
+
+def register_blueprints(app):
+    # Prevents circular imports
+    from expense.views import expenses
+    app.register_blueprint(expenses)
+
+register_blueprints(app)
+
+if __name__ == '__main__':
+    app.run()
