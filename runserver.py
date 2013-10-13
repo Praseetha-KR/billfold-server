@@ -1,4 +1,4 @@
-from expense import app
+from expense import app as application
 
 if __name__ == '__main__':
-	app.run(debug=True, port=9000)
+	application.run(debug=application.config['DEBUG'], port=application.config['PORT'])
