@@ -55,6 +55,32 @@ router.route('/expenses/:expense_id')
 				res.send(err);
 			res.json(expense);
 		});
+	})
+	.put(function(req, res) {
+		Expense.findById(req.params.expense_id, function(err, expense) {
+			if (err)
+				res.send(err);
+
+			expense.category = req.body.category;
+			expense.amount = req.body.amount;
+			expense.date = req.body.date;
+			expense.remark = req.body.remark;
+
+			expense.save(function(err) {
+				if (err)
+					res.send(err);
+				res.json({ message: 'Expense updated!' });
+			});
+		});
+	})
+	.delete(function(req, res) {
+		Expense.remove({
+			_id: req.params.expense_id
+		}, function(err, expense) {
+			if (err)
+				res.send(err);
+			res.json({ message: 'Successfully deleted!' });
+		});
 	});
 
 app.use('/api', router);
