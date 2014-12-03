@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
 
-var ExpenseSchema = new Schema({
+var ExpenseSchema = new mongoose.Schema({
 	category: String,
 	amount: Number,
 	date: { type: Date, default: Date.now },

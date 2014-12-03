@@ -26,19 +26,29 @@ router.get('/', function(req, res) {
 router.route('/expenses')
 	.post(function(req, res) {
 		var expense = new Expense();
+
 		expense.category = req.body.category;
 		expense.amount = req.body.amount;
 		expense.date = req.body.date;
 		expense.remark = req.body.remark;
 
-		expense.save(function(err) {
-			if (err)
-				res.send(err)
+		expense.save(function(err, expense) {
+			if (err) {
+				return console.error(err);
+			}
+			console.log(expense);
 			res.json({ message: 'Expense added!'});
 		});
 	});
 
-app.use('/expenses', router);
+app.use('/api', router);
 
 app.listen(port);
 console.log('Express server is listening on port ' + port);
+
+process.on("SIGINT", function() {
+    mongoose.connection.close(function () {
+        console.log("Mongoose disconnected on app termination");
+        process.exit(0);
+    });
+});
