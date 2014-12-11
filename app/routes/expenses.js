@@ -31,7 +31,12 @@ router.route('/expenses')
 				return console.error(err);
 			}
 			console.log(expense);
-			res.json({ message: 'Expense added!'});
+			// res.json({ message: 'Expense added!'});
+			Expense.find(function(err, expenses) {
+				if (err)
+					res.send(err);
+				res.json(expenses);
+			});
 		});
 	})
 	.get(function(req, res) {
@@ -73,7 +78,12 @@ router.route('/expenses/:expense_id')
 		}, function(err, expense) {
 			if (err)
 				res.send(err);
-			res.json({ message: 'Successfully deleted!' });
+			// res.json({ message: 'Successfully deleted!' });
+			Expense.find(function(err, expenses) {
+				if (err)
+					res.send(err);
+				res.json(expenses);
+			});
 		});
 	});
 
