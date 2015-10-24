@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Praseetha-KR/expense-backend#readme",
   "dependencies": {
     "body-parser": "^1.14.1",
+    "cors": "^2.7.1",
     "express": "^4.13.3",
     "mongoose": "^4.2.2",
     "morgan": "^1.6.1"

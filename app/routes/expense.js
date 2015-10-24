@@ -1,6 +1,7 @@
 'use strict';
 
 var express = require('express');
+var cors = require('cors');
 var router = express.Router();
 var Expense = require('../models/expense');
 
@@ -9,12 +10,16 @@ var Expense = require('../models/expense');
 //     next();
 // });
 
+var corsOptions = {
+    origin: 'http://localhost:8088'
+};
+
 router.get('/', function(req, res) {
     res.json({ message: 'Welcome to expense api!'});
 });
 
 router.route('/expenses')
-    .post(function(req, res) {
+    .post(cors(corsOptions), function(req, res) {
         var expense = new Expense();
         expense.created_at = new Date();
         expense.date = req.body.date;
@@ -30,7 +35,7 @@ router.route('/expenses')
         });
     })
 
-    .get(function(req, res) {
+    .get(cors(corsOptions), function(req, res) {
         var filter = {};
 
         // Filter for duration & date
