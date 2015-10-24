@@ -1,26 +1,47 @@
+'use strict';
+
 var express = require('express');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var cors = require('cors');
 var app = express();
+var bodyParser = require('body-parser');
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/expenseapptest');
+var Expense = require('./app/models/expense');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8080;
 
-mongoose.connect('mongodb://localhost:27017/expensetestdb');
+var router = express.Router();
 
-var expenseRouter = require('./app/routes/expenses');
-app.use('/api', expenseRouter);
+router.use(function(req, res, next) {
+    console.log('Request recieved');
+    next();
+});
+
+router.get('/', function(req, res) {
+    res.json({ message: 'Welcome to expense api!'});
+});
+
+router.route('/expenses')
+    .post(function(req, res) {
+        var expense = new Expense();
+        expense.created_at = new Date();
+        expense.date = req.body.date;
+        expense.amount = req.body.amount;
+        expense.category = req.body.category;
+        expense.remarks = req.body.remarks;
+
+        expense.save(function(err) {
+            if (err) {
+                res.send(err);
+            }
+            res.json({ message: 'Expense created!' });
+        });
+    });
+
+app.use('/api', router);
 
 app.listen(port);
-console.log('Express server is listening on port ' + port);
-
-process.on("SIGINT", function() {
-    mongoose.connection.close(function () {
-        console.log("Mongoose disconnected on app termination");
-        process.exit(0);
-    });
-});
+console.log('Listening on port ' + port);
