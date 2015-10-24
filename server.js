@@ -37,7 +37,7 @@ router.route('/expenses')
             if (err) {
                 res.send(err);
             }
-            res.json({ message: 'Expense created!' });
+            res.json(expense);
         });
     })
     .get(function(req, res) {
@@ -56,6 +56,24 @@ router.route('/expenses/:expense_id')
                 res.send(err);
             }
             res.json(expense);
+        });
+    })
+    .put(function(req, res) {
+        Expense.findById(req.params.expense_id, function(err, expense) {
+            if (err) {
+                res.send(err);
+            }
+            expense.date = req.body.date;
+            expense.amount = req.body.amount;
+            expense.category = req.body.category;
+            expense.remarks = req.body.remarks;
+
+            expense.save(function(err) {
+                if(err) {
+                    res.send(err);
+                }
+                res.json(expense);
+            });
         });
     });
 
