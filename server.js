@@ -100,6 +100,16 @@ router.route('/expenses/:expense_id')
                 res.json(expense);
             });
         });
+    })
+    .delete(function(req, res) {
+        Expense.remove({
+            _id: req.params.expense_id
+        }, function(err, expense) {
+            if (err) {
+                res.send(err);
+            }
+            res.json({ message: 'Expense deleted'});
+        });
     });
 
 app.use('/api', router);
