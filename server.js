@@ -49,6 +49,16 @@ router.route('/expenses')
         });
     });
 
+router.route('/expenses/:expense_id')
+    .get(function(req, res) {
+        Expense.findById(req.params.expense_id, function(err, expense) {
+            if (err) {
+                res.send(err);
+            }
+            res.json(expense);
+        });
+    });
+
 app.use('/api', router);
 
 app.listen(port);
