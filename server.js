@@ -39,6 +39,14 @@ router.route('/expenses')
             }
             res.json({ message: 'Expense created!' });
         });
+    })
+    .get(function(req, res) {
+        Expense.find(function(err, expenses) {
+            if (err) {
+                res.send(err);
+            }
+            res.json(expenses);
+        });
     });
 
 app.use('/api', router);
