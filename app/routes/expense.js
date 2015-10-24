@@ -33,6 +33,18 @@ router.route('/expenses')
     .get(function(req, res) {
         var filter = {};
 
+        // Filter for duration & date
+        if (req.query.date) {
+            if (typeof req.query.date === 'object') {
+                if (req.query.date[0] > req.query.date[1]) {
+                    filter.date = { '$gte': req.query.date[1], '$lte': req.query.date[0] };
+                } else {
+                    filter.date = { '$gte': req.query.date[0], '$lte': req.query.date[1] };
+                }
+            } else {
+                filter.date = req.query.date;
+            }
+        }
         // Filter for category
         if (req.query.category) {
             var categoryArr = [];
