@@ -5,21 +5,12 @@ var cors = require('cors');
 var router = express.Router();
 var Expense = require('../models/expense');
 
-// router.use(function(req, res, next) {
-//     console.log('Request recieved');
-//     next();
-// });
-
-var corsOptions = {
-    origin: 'http://localhost:8088'
-};
-
-router.get('/', function(req, res) {
+router.get('/', cors(), function(req, res) {
     res.json({ message: 'Welcome to expense api!'});
 });
 
 router.route('/expenses')
-    .post(cors(corsOptions), function(req, res) {
+    .post(function(req, res) {
         var expense = new Expense();
         expense.created_at = new Date();
         expense.date = req.body.date;
@@ -35,7 +26,7 @@ router.route('/expenses')
         });
     })
 
-    .get(cors(corsOptions), function(req, res) {
+    .get(function(req, res) {
         var filter = {};
 
         // Filter for duration & date
