@@ -75,6 +75,31 @@ router.route('/expenses/:expense_id')
                 res.json(expense);
             });
         });
+    })
+    .patch(function(req, res) {
+        Expense.findById(req.params.expense_id, function(err, expense) {
+            if (err) {
+                res.send(err);
+            }
+            if (req.body.date) {
+                expense.date = req.body.date;
+            }
+            if (req.body.amount) {
+                expense.amount = req.body.amount;
+            }
+            if (req.body.category) {
+                expense.category = req.body.category;
+            }
+            if (req.body.remarks) {
+                expense.remarks = req.body.remarks;
+            }
+            expense.update(expense, function(err) {
+                if(err) {
+                    res.send(err);
+                }
+                res.json(expense);
+            });
+        });
     });
 
 app.use('/api', router);
