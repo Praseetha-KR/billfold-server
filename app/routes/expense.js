@@ -29,8 +29,24 @@ router.route('/expenses')
             res.json(expense);
         });
     })
+
     .get(function(req, res) {
-        Expense.find(function(err, expenses) {
+        var filter = {};
+
+        // Filter for category
+        if (req.query.category) {
+            var categoryArr = [];
+            if (typeof req.query.category === 'object') {
+                for (var i in req.query.category) {
+                    categoryArr.push(req.query.category[i]);
+                }
+            } else {
+                categoryArr.push(req.query.category);
+            }
+            filter.category = { $in: categoryArr };
+        }
+
+        Expense.find(filter, function(err, expenses) {
             if (err) {
                 res.send(err);
             }
