@@ -4,10 +4,10 @@ var express = require('express');
 var router = express.Router();
 var Expense = require('../models/expense');
 
-router.use(function(req, res, next) {
-    console.log('Request recieved');
-    next();
-});
+// router.use(function(req, res, next) {
+//     console.log('Request recieved');
+//     next();
+// });
 
 router.get('/', function(req, res) {
     res.json({ message: 'Welcome to expense api!'});
