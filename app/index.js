@@ -1,6 +1,6 @@
 import Koa from 'koa';
 import logger from 'koa-logger';
-import router from './routes.js'
+import router from './routes'
 
 const app = new Koa();
 app

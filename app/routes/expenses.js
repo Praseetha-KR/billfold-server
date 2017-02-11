@@ -18,11 +18,4 @@ expenseRouter
         ctx.body = ctx.params.id;
     });
 
-const router = new Router();
-router
-    .get('/', async (ctx, next) => {
-        ctx.body = "Welcome to expenses API";
-    })
-    .use('/api/v1/expenses', expenseRouter.routes());
-
-export default router;
+export default expenseRouter;
