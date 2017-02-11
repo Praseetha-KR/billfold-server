@@ -1,24 +1,28 @@
 import Router from 'koa-router';
 
-const router = new Router({
-    prefix: '/api/v1/'
-});
-
-router
-    .get('/expenses', async (ctx, next) => {
-        ctx.body = "hello";
+const expenseRouter = new Router();
+expenseRouter
+    .get('/', async (ctx, next) => {
+        ctx.body = "expenses";
     })
-    .post('/expenses', async (ctx, next) => {
+    .post('/', async (ctx, next) => {
         ctx.body = ctx.request.body;
     })
-    .get('/expenses/:id', async (ctx, next) => {
+    .get('/:id', async (ctx, next) => {
         ctx.body = ctx.params.id;
     })
-    .put('/expenses/:id', async (ctx, next) => {
+    .put('/:id', async (ctx, next) => {
         ctx.body = ctx.params.id;
     })
-    .del('/expenses/:id', async (ctx, next) => {
+    .del('/:id', async (ctx, next) => {
         ctx.body = ctx.params.id;
     });
+
+const router = new Router();
+router
+    .get('/', async (ctx, next) => {
+        ctx.body = "Welcome to expenses API";
+    })
+    .use('/api/v1/expenses', expenseRouter.routes());
 
 export default router;
