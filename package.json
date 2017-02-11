@@ -2,11 +2,11 @@
   "name": "expense-backend",
   "version": "0.0.1",
   "description": "REST server for ExpenseApp",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js --exec babel-node"
   },
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Praseetha-KR/expense-backend.git"
