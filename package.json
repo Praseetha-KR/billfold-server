@@ -1,5 +1,5 @@
 {
-  "name": "expense-backend",
+  "name": "billfold-server",
   "version": "0.0.1",
   "description": "REST server for ExpenseApp",
   "private": true,
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Praseetha-KR/expense-backend.git"
+    "url": "git+https://github.com/Praseetha-KR/billfold-server.git"
   },
   "keywords": [
     "expense"
@@ -17,9 +17,9 @@
   "author": "Praseetha-KR",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Praseetha-KR/expense-backend/issues"
+    "url": "https://github.com/Praseetha-KR/billfold-server/issues"
   },
-  "homepage": "https://github.com/Praseetha-KR/expense-backend#readme",
+  "homepage": "https://github.com/Praseetha-KR/billfold-server#readme",
   "dependencies": {
     "babel-cli": "^6.22.2",
     "babel-plugin-transform-async-to-generator": "^6.22.0",
