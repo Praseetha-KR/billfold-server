@@ -1,11 +1,6 @@
 import google from 'googleapis';
 require('dotenv').config();
 
-
-export default {
-    get: getExpense
-};
-
 function removeZeroPrefix(number) {
     if (number[0] === 0) {
         return number.slice(1);
@@ -15,7 +10,7 @@ function removeZeroPrefix(number) {
 
 function getSheetId(year) {
     var yearlySpreadsheets = {
-        2017: process.env.GOOGLE_SPREADSHEET_ID
+        2017: process.env.GOOGLE_SPREADSHEET_ID_2017
     };
     return yearlySpreadsheets[year];
 }
@@ -45,6 +40,33 @@ function rowToExpenseObj(row) {
     };
 }
 
+function totalExpenses(row) {
+    let sum = 0;
+    const expenseRow = row.slice(2, 10);
+    expenseRow.forEach(column => {
+        if (parseInt(column)) {
+            sum += parseInt(column);
+        }
+    });
+    return sum;
+}
+
+function optionsSheetIdRange(datestr) {
+    const day = datestr.slice(0,2);
+    const month = datestr.slice(2,4);
+    const year = datestr.slice(4);
+
+    const rowIndex = parseInt(removeZeroPrefix(day)) + 1;
+    const sheetName = getSheetName(removeZeroPrefix(month));
+    const range = `${sheetName}!A${rowIndex}:K${rowIndex}`;
+    const spreadsheetId = getSheetId(year);
+
+    return {
+        spreadsheetId: spreadsheetId,
+        range: range
+    }
+}
+
 function authorize() {
     return new Promise((resolve, reject) => {
         const OAuth2 = google.auth.OAuth2;
@@ -62,13 +84,10 @@ function authorize() {
     });
 }
 
-function fetchRows(sheetId, sheetRange) {
+function queryExpenseSheetRows(datestr) {
     return new Promise((resolve, reject) => {
         var sheets = google.sheets('v4');
-        sheets.spreadsheets.values.get({
-            spreadsheetId: sheetId,
-            range: sheetRange,
-        }, (err, response) => {
+        sheets.spreadsheets.values.get(optionsSheetIdRange(datestr), (err, response) => {
             if (err) {
                 console.log('The API returned an error: ' + err);
                 reject();
@@ -78,21 +97,52 @@ function fetchRows(sheetId, sheetRange) {
     });
 }
 
-async function getExpense(datestr) {
+function updateExpenseSheetRow(datestr, expenseObj) {
+    return new Promise((resolve, reject) => {
+        var sheets = google.sheets('v4');
+        sheets.spreadsheets.values.update(Object.assign(optionsSheetIdRange(datestr),
+        {
+            valueInputOption: "USER_ENTERED",
+            resource: {
+                values: [
+                    Object.values(expenseObj)
+                ]
+            }
+        }), (err, response) => {
+            if (err) {
+                console.log('The API returned an error: ' + err);
+                reject();
+            }
+            resolve(expenseObj);
+        });
+    });
+}
+
+async function getRowForDate(datestr) {
     let oAuth2Client = await authorize();
     google.options({
         auth: oAuth2Client
     });
 
-    const day = removeZeroPrefix(datestr.slice(0,2));
-    const month = removeZeroPrefix(datestr.slice(2,4));
-    const year = datestr.slice(4);
-
-    const rowIndex = parseInt(day) + 1;
-    const sheetName = getSheetName(month);
-    const range = `${sheetName}!A${rowIndex}:K${rowIndex}`;
-    const spreadsheetId = getSheetId(year);
-
-    let rows = await fetchRows(spreadsheetId, range);
-    return rowToExpenseObj(rows[0]);
+    const rows = await queryExpenseSheetRows(datestr);
+    return rows[0];
 }
+
+async function getExpense(datestr) {
+    const row = await getRowForDate(datestr);
+    return rowToExpenseObj(row);
+}
+
+async function editExpense(datestr, value, category, remarks='') {
+    const row = await getRowForDate(datestr);
+    const expenseObj = rowToExpenseObj(row);
+    expenseObj[category] = value;
+    expenseObj['remarks'] = remarks;
+    expenseObj['total'] = totalExpenses(Object.values(expenseObj));
+    return updateExpenseSheetRow(datestr, expenseObj);
+}
+
+export default {
+    get: getExpense,
+    edit: editExpense
+};
