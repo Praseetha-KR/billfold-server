@@ -27,6 +27,7 @@
     "dotenv": "^4.0.0",
     "googleapis": "^16.1.0",
     "koa": "next",
+    "koa-bodyparser": "next",
     "koa-logger": "next",
     "koa-router": "next"
   }
