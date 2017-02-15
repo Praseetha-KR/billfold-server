@@ -40,3 +40,7 @@ config.py
 .DS_Store
 node_modules/
 npm-debug.log
+
+client_secret.json
+.env
+.vscode

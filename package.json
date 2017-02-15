@@ -24,6 +24,8 @@
     "babel-cli": "^6.22.2",
     "babel-plugin-transform-async-to-generator": "^6.22.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.22.0",
+    "dotenv": "^4.0.0",
+    "googleapis": "^16.1.0",
     "koa": "next",
     "koa-logger": "next",
     "koa-router": "next"
