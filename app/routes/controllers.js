@@ -55,11 +55,10 @@ function optionsSheetIdRange(datestr) {
     const day = datestr.slice(0,2);
     const month = datestr.slice(2,4);
     const year = datestr.slice(4);
-
+    const spreadsheetId = getSheetId(year);
     const rowIndex = parseInt(removeZeroPrefix(day)) + 1;
     const sheetName = getSheetName(removeZeroPrefix(month));
     const range = `${sheetName}!A${rowIndex}:K${rowIndex}`;
-    const spreadsheetId = getSheetId(year);
 
     return {
         spreadsheetId: spreadsheetId,
@@ -81,6 +80,28 @@ function authorize() {
             expiry_date: process.env.GOOGLE_API_EXPIRY_DATE
         });
         resolve(oAuth2Client);
+    });
+}
+
+function queryExpenseSheet(year, month, day) {
+    return new Promise((resolve, reject) => {
+        var sheets = google.sheets('v4');
+        let range;
+        if (day) {
+            range = `${getSheetName(removeZeroPrefix(month))}!A2:K${day+1}`;
+        } else {
+            range = `${getSheetName(removeZeroPrefix(month))}!A2:K32`;
+        }
+        sheets.spreadsheets.values.get({
+            spreadsheetId: getSheetId(year),
+            range: range
+        }, (err, response) => {
+            if (err) {
+                console.log('The API returned an error: ' + err);
+                reject();
+            }
+            resolve(response.values);
+        });
     });
 }
 
@@ -128,6 +149,32 @@ async function getRowForDate(datestr) {
     return rows[0];
 }
 
+async function getSheetForMonth(year, month, day) {
+    let oAuth2Client = await authorize();
+    google.options({
+        auth: oAuth2Client
+    });
+    return queryExpenseSheet(year, month, day);
+}
+
+async function queryExpenses() {
+    const d = new Date();
+    const day = d.getDate();
+    const month = d.getMonth();
+    const year = d.getFullYear();
+
+    let expenses = [];
+    for (let m = 1; m < month + 1; m++) {
+        expenses[m - 1] = await getSheetForMonth(year, m);
+    }
+    expenses[month] = await getSheetForMonth(year, month, day);
+
+    const arrOfExpenseArr = [].concat.apply([], expenses);
+    return arrOfExpenseArr.map(arr => {
+        return rowToExpenseObj(arr)
+    });
+}
+
 async function getExpense(datestr) {
     const row = await getRowForDate(datestr);
     return rowToExpenseObj(row);
@@ -143,6 +190,7 @@ async function editExpense(datestr, value, category, remarks='') {
 }
 
 export default {
+    query: queryExpenses,
     get: getExpense,
     edit: editExpense
 };

@@ -4,7 +4,7 @@ import Expense from './controllers.js';
 const expenseRouter = new Router();
 expenseRouter
     .get('/', async (ctx, next) => {
-        ctx.body = "expenses";
+        ctx.body = await Expense.query();
     })
     // .post('/', async (ctx, next) => {
     //     ctx.body = ctx.request.body;
