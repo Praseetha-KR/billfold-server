@@ -1,4 +1,5 @@
 import Router from 'koa-router';
+import Expense from './controllers.js';
 
 const expenseRouter = new Router();
 expenseRouter
@@ -9,7 +10,7 @@ expenseRouter
         ctx.body = ctx.request.body;
     })
     .get('/:id', async (ctx, next) => {
-        ctx.body = ctx.params.id;
+        ctx.body = await Expense.get(ctx.params.id);
     })
     .put('/:id', async (ctx, next) => {
         ctx.body = ctx.params.id;
