@@ -39,31 +39,23 @@ function getRows(sheetId, sheetRange) {
 const router = new Router();
 router
     .get('/', async (ctx, next) => {
-        ctx.body = "Welcome to expenses API";
+        // ctx.body = "Welcome to expenses API";
+        let oAuth2Client = await authorize();
+        google.options({
+            auth: oAuth2Client
+        });
 
-        authorize()
-            .then(oAuth2Client => {
-                google.options({
-                    auth: oAuth2Client
-                });
-                console.log('Authenticated');
-                return google;
-            })
-            .then(data => {
-                return getRows(process.env.GOOGLE_SPREADSHEET_ID, 'February!A2:J32')
-            })
-            .then(rows => {
-                rows.forEach(row => {
-                    let sum = 0;
-                    for (let i = 2; i < row.length; i++) {
-                        if (parseInt(row[i])) {
-                            sum += parseInt(row[i]);
-                        }
-                    }
-                    console.log(sum);
-                });
-                ctx.body = rows;
-            });
+        let rows = await getRows(process.env.GOOGLE_SPREADSHEET_ID, 'February!A2:J32');
+        rows.forEach(row => {
+            let sum = 0;
+            for (let i = 2; i < row.length; i++) {
+                if (parseInt(row[i])) {
+                    sum += parseInt(row[i]);
+                }
+            }
+            console.log(sum);
+        });
+        ctx.body = rows;
     })
     .use('/api/v1/expenses', expenseRouter.routes());
 
