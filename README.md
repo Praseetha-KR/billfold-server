@@ -1,34 +1,48 @@
-##expense-backend
+# billfold-server
 
-REST Server for ExpenseApp
+billfold-server is a REST Server which directly updates expense sheet (existing with predefined structure) in Google Spreadsheets. No database required.
 
-####Expense object fields:
+### Setup
 
-| Field         | Type      | Purpose               |
-|---------------|-----------|-----------------------|
-| `created_at`  | Date      | Creation time         |
-| `date`        | Date      | Date of Expense       |
-| `amount`      | Number    | amount                |
-| `category`    | String    | Category              |
-| `remarks`     | String    | Remarks if any        |
+##### Install dependencies:
+```
+yarn
+```
+##### Start server:
+```
+npm start
+```
 
-####APIs available:
-1. List all expenses:
+### Config
+Create a `.env` file in the project root directory, provide following info in that.
+```
+GOOGLE_API_CLIENT_ID        = 'xxxxxxxxxxxx'
+GOOGLE_API_CLIENT_SECRET    = 'xxxxx'
+GOOGLE_API_REDIRECT_URL     = 'http://xxxxxxxx/xxxx'
+GOOGLE_API_ACCESS_TOKEN     = 'xxxxxxxxxxxx'
+GOOGLE_API_REFRESH_TOKEN    = 'xxxxxxxxxxxx'
+GOOGLE_API_EXPIRY_DATE      = new Date(xxxxxxx)'
+GOOGLE_SPREADSHEET_ID_2017  = 'xxxxxxxxxxxx'
+```
+
+### Endpoints implemented:
+1. List all expenses (from start of year till date):
         
-        GET /api/expenses
+        GET /api/v1/expenses
         
-2. Add expense:
         
-        POST /api/expenses
+2. View expense item:
         
-3. View expense item:
+        GET /api/expenses/:datestr
         
-        GET /api/expenses/:expense_id
+3. Update expense item:
         
-4. Update expense item:
+        PUT /api/expenses/:datestr
         
-        PATCH /api/expenses/:expense_id
-        
-5. Delete expense item:
-        
-        DELETE /api/expenses/:expense_id
+
+### Expense sheet format:
+
+| Date | Total | Food | Travel | Supermarket | Recharge | e-shopping | Rent/wifi/hosting | Transfers | Others | Remarks |
+|------|-------|------|--------|-------------|----------|------------|-------------------|-----------|--------|---------|
+|`<Date>`|`<Number>`|`<Number>`|`<Number>`|`<Number>`|`<Number>`|`<Number>`|`<Number>`|`<Number>`|`<Number>`|`<String>`|
+
