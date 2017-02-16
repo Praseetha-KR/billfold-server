@@ -66,7 +66,7 @@ function optionsSheetIdRange(datestr) {
     }
 }
 
-function authorize() {
+async function authorize() {
     return new Promise((resolve, reject) => {
         const OAuth2 = google.auth.OAuth2;
         let oAuth2Client = new OAuth2(
@@ -83,12 +83,20 @@ function authorize() {
     });
 }
 
-function queryExpenseSheet(year, month, day) {
+async function setGoogleAuth() {
+    let oAuth2Client = await authorize();
+    google.options({
+        auth: oAuth2Client
+    });
+    return;
+}
+
+async function queryExpenseSheet(year, month, lastdate) {
     return new Promise((resolve, reject) => {
         var sheets = google.sheets('v4');
         let range;
-        if (day) {
-            range = `${getSheetName(removeZeroPrefix(month))}!A2:K${day+1}`;
+        if (lastdate) {
+            range = `${getSheetName(removeZeroPrefix(month))}!A2:K${lastdate+1}`;
         } else {
             range = `${getSheetName(removeZeroPrefix(month))}!A2:K32`;
         }
@@ -105,7 +113,7 @@ function queryExpenseSheet(year, month, day) {
     });
 }
 
-function queryExpenseSheetRows(datestr) {
+async function queryExpenseSheetRows(datestr) {
     return new Promise((resolve, reject) => {
         var sheets = google.sheets('v4');
         sheets.spreadsheets.values.get(optionsSheetIdRange(datestr), (err, response) => {
@@ -118,7 +126,7 @@ function queryExpenseSheetRows(datestr) {
     });
 }
 
-function updateExpenseSheetRow(datestr, expenseObj) {
+async function updateExpenseSheetRow(datestr, expenseObj) {
     return new Promise((resolve, reject) => {
         var sheets = google.sheets('v4');
         sheets.spreadsheets.values.update(Object.assign(optionsSheetIdRange(datestr),
@@ -140,34 +148,24 @@ function updateExpenseSheetRow(datestr, expenseObj) {
 }
 
 async function getRowForDate(datestr) {
-    let oAuth2Client = await authorize();
-    google.options({
-        auth: oAuth2Client
-    });
-
+    await setGoogleAuth();
     const rows = await queryExpenseSheetRows(datestr);
     return rows[0];
 }
 
-async function getSheetForMonth(year, month, day) {
-    let oAuth2Client = await authorize();
-    google.options({
-        auth: oAuth2Client
-    });
-    return queryExpenseSheet(year, month, day);
-}
-
 async function queryExpenses() {
+    await setGoogleAuth();
+
     const d = new Date();
-    const day = d.getDate();
+    const today = d.getDate();
     const month = d.getMonth();
     const year = d.getFullYear();
 
     let expenses = [];
     for (let m = 1; m < month + 1; m++) {
-        expenses[m - 1] = await getSheetForMonth(year, m);
+        expenses[m - 1] = await queryExpenseSheet(year, m);
     }
-    expenses[month] = await getSheetForMonth(year, month, day);
+    expenses[month] = await queryExpenseSheet(year, month, today);
 
     const arrOfExpenseArr = [].concat.apply([], expenses);
     return arrOfExpenseArr.map(arr => {
